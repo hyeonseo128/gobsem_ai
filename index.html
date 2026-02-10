@@ -464,6 +464,7 @@
                         <button class="math-key special" onclick="insertMath(')')">)</button>
                         <button class="math-key special" onclick="insertMath('{')">{</button>
                         <button class="math-key special" onclick="insertMath('}')">}</button>
+                        <button class="math-key special" onclick="insertMath('|')">}</button>
                         <button class="math-key special wide" onclick="backspaceMath()">⌫ 지우기</button>
                     </div>
 
@@ -611,27 +612,24 @@
         
         // 곱셈공식 데이터베이스
         const formulas = [
-            // (a+b)^2 = a^2 + 2ab + b^2
-            { factored: '(x+3)²', expanded: 'x²+6x+9' },
-            { factored: '(x+5)²', expanded: 'x²+10x+25' },
-            { factored: '(2x+1)²', expanded: '4x²+4x+1' },
-            
-            // (a-b)^2 = a^2 - 2ab + b^2
-            { factored: '(x-3)²', expanded: 'x²-6x+9' },
-            { factored: '(x-5)²', expanded: 'x²-10x+25' },
-            { factored: '(2x-3)²', expanded: '4x²-12x+9' },
-            
-            // (a+b)(a-b) = a^2 - b^2
-            { factored: '(x+4)(x-4)', expanded: 'x²-16' },
-            { factored: '(x+7)(x-7)', expanded: 'x²-49' },
-            { factored: '(2x+5)(2x-5)', expanded: '4x²-25' },
-            { factored: '(3x+2)(3x-2)', expanded: '9x²-4' },
-            
-            // (x+a)(x+b) = x^2 + (a+b)x + ab
-            { factored: '(x+2)(x+3)', expanded: 'x²+5x+6' },
-            { factored: '(x+1)(x+6)', expanded: 'x²+7x+6' },
-            { factored: '(x-2)(x-5)', expanded: 'x²-7x+10' },
-            { factored: '(x+4)(x-3)', expanded: 'x²+x-12' },
+            { factored: 'm(a+b)', expanded: 'ma+mb' },
+            { factored: 'm(a-b)', expanded: 'ma-mb' },
+            { factored: '(a+b)²', expanded: 'a²+2ab+b²' },
+            { factored: '(a-b)²', expanded: 'a²-2ab+b²' },
+            { factored: '(a+b)(a-b)', expanded: 'a²-b²' },
+            { factored: '(x+a)(x+b)', expanded: 'x²+(a+b)x+ab' },
+            { factored: '(ax+b)(cx+d)', expanded: 'acx²+(ad+bc)x+bd' },
+            { factored: '(a+b+c)²', expanded: 'a²+b²+c²+2(ab+bc+ca)' },
+            { factored: '(a+b)³', expanded: 'a³+3a²b+3ab²+b³' },
+            { factored: '(a-b)³', expanded: 'a³-3a²b+3ab²-b³' },
+            { factored: '(a+b)(a²-ab+b²)', expanded: 'a³+b³' },
+            { factored: '(a-b)(a²+ab+b²)', expanded: 'a³-b³' },
+            { factored: '(a²+ab+b²)(a²-ab+b²)', expanded: 'a⁴+a²b²+b⁴' },
+            { factored: '(a+b+c)(a²+b²+c²-ab-bc-ca)', expanded: 'a³+b³+c³-3abc' },
+            { factored: '(x+a)(x+b)(x+c)', expanded: 'x³+(a+b+c)x²+(ab+bc+ca)x+abc' },
+            { factored: '(x-a)(x-b)(x-c)', expanded: 'x³-(a+b+c)x²+(ab+bc+ca)x-abc' },
+            { factored: 'a²+b²', expanded: '(a+b)²-2ab|(a-b)²+2ab' }, // 또는 (a-b)²+2ab
+            { factored: 'a³+b³', expanded: '(a+b)³-3ab(a+b)' }
         ];
 
         // 게임 상태

@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Prompt missing" });
   }
 
-  const apiKey = process.env.AIzaSyAjEacl2HMuEFP65azV-wWcyWpuO0iGEpc;
+  const apiKey = process.env.API_KEY;
 
   try {
     const response = await fetch(
