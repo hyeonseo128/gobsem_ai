@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>곱셈공식 학습 프로그램</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            color: #ecf0f1;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            background-color: #34495e;
+            color: #ecf0f1;
+            border: 2px solid #4a5f7f;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn:hover {
+            background-color: #4a5f7f;
+            transform: translateY(-2px);
+        }
+
+        .mode-btn.active {
+            background-color: #5a7fa7;
+            border-color: #7fa7d7;
+        }
+
+        .game-area, .ai-area {
+            display: none;
+            background-color: #34495e;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .game-area.active, .ai-area.active {
+            display: block;
+        }
+
+        .problem-display {
+            background-color: #2c3e50;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.8em;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .problem-display.correct {
+            background-color: #27ae60;
+            animation: pulse-success 0.5s ease;
+        }
+
+        .problem-display.wrong {
+            background-color: #c0392b;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        @keyframes pulse-success {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border: 2px solid #4a5f7f;
+            border-radius: 6px;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #7fa7d7;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            background-color: #5a7fa7;
+            color: #ecf0f1;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #7fa7d7;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background-color: #4a5f7f;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            display: none;
+        }
+
+        .feedback.correct {
+            background-color: #27ae60;
+            display: block;
+        }
+
+        .feedback.wrong {
+            background-color: #c0392b;
+            display: block;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .timer-display.warning {
+            color: #e74c3c;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .result-screen {
+            display: none;
+            background-color: #34495e;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .result-screen.active {
+            display: block;
+        }
+
+        .result-screen h2 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #3498db;
+        }
+
+        .result-stats {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+        }
+
+        .leaderboard {
+            background-color: #2c3e50;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .leaderboard h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+
+        .leaderboard-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #34495e;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
+        .leaderboard-item.current {
+            border: 2px solid #3498db;
+        }
+
+        .ai-comment {
+            background-color: #2c3e50;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            min-height: 80px;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .ai-comment.loading {
+            opacity: 0.6;
+        }
+
+        .difficulty-selector {
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .math-keyboard {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #2c3e50;
+            border-radius: 8px;
+        }
+
+        .keyboard-section {
+            display: grid;
+            gap: 8px;
+        }
+
+        .keyboard-section.variables {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .keyboard-section.operators {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .keyboard-section.numbers {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .keyboard-section.special {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .math-key {
+            padding: 15px;
+            font-size: 1.3em;
+            color: #ecf0f1;
+            border: 2px solid #4a5f7f;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        .math-key:hover {
+            transform: scale(1.05);
+        }
+
+        .math-key:active {
+            transform: scale(0.95);
+        }
+
+        /* 변수 키 - 보라색 */
+        .math-key.var {
+            background-color: #8e44ad;
+            border-color: #9b59b6;
+        }
+
+        .math-key.var:hover {
+            background-color: #9b59b6;
+        }
+
+        /* 연산자 키 - 주황색 */
+        .math-key.op {
+            background-color: #d35400;
+            border-color: #e67e22;
+        }
+
+        .math-key.op:hover {
+            background-color: #e67e22;
+        }
+
+        /* 숫자 키 - 파란색 */
+        .math-key.num {
+            background-color: #2980b9;
+            border-color: #3498db;
+        }
+
+        .math-key.num:hover {
+            background-color: #3498db;
+        }
+
+        /* 특수 키 - 회색 */
+        .math-key.special {
+            background-color: #34495e;
+            border-color: #4a5f7f;
+        }
+
+        .math-key.special:hover {
+            background-color: #4a5f7f;
+        }
+
+        .math-key.wide {
+            grid-column: span 2;
+        }
+
+        .start-screen {
+            background-color: #34495e;
+            padding: 60px 40px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+
+        .start-screen p {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .start-btn {
+            padding: 20px 50px;
+            font-size: 1.5em;
+            background-color: #3498db;
+            color: #ecf0f1;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .start-btn:hover {
+            background-color: #5dade2;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>곱셈공식 학습 프로그램</h1>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="switchMode('game')">곱셈공식 게임</button>
+            <button class="mode-btn" onclick="switchMode('ai')">AI 문제 풀이</button>
+        </div>
+
+        <!-- 게임 모드 -->
+        <div class="game-area active">
+            <!-- 시작 화면 -->
+            <div class="start-screen" id="startScreen">
+                <h2>곱셈공식 게임</h2>
+                <p>60초 안에 최대한 많은 문제를 맞춰보세요!</p>
+                <button class="start-btn" onclick="startGame()">게임 시작</button>
+            </div>
+
+            <!-- 게임 화면 -->
+            <div id="gameScreen" class="hidden">
+                <div class="timer-display" id="timerDisplay">
+                    남은 시간: <span id="timeLeft">60</span>초
+                </div>
+                
+                <div class="score">
+                    정답: <span id="correctCount">0</span> | 오답: <span id="wrongCount">0</span>
+                </div>
+                
+                <div class="problem-display" id="problemDisplay">
+                    문제가 여기에 표시됩니다
+                </div>
+
+                <div class="input-group">
+                    <label for="answerInput">정답 입력:</label>
+                    <input type="text" id="answerInput" placeholder="예: (x+3)(x-3) 또는 x²-9">
+                </div>
+
+                <!-- 수학 키보드 -->
+                <div class="math-keyboard">
+                    <!-- 변수 섹션 -->
+                    <div class="keyboard-section variables">
+                        <button class="math-key var" onclick="insertMath('a')">a</button>
+                        <button class="math-key var" onclick="insertMath('b')">b</button>
+                        <button class="math-key var" onclick="insertMath('c')">c</button>
+                        <button class="math-key var" onclick="insertMath('d')">d</button>
+                        <button class="math-key var" onclick="insertMath('m')">m</button>
+                        <button class="math-key var" onclick="insertMath('n')">n</button>
+                        <button class="math-key var" onclick="insertMath('x')">x</button>
+                        <button class="math-key var" onclick="insertMath('y')">y</button>
+                        <button class="math-key var" onclick="insertMath('z')">z</button>
+                    </div>
+
+                    <!-- 특수 기호 섹션 -->
+                    <div class="keyboard-section special">
+                        <button class="math-key special" onclick="insertMath('²')">x²</button>
+                        <button class="math-key special" onclick="insertMath('³')">x³</button>
+                        <button class="math-key special" onclick="insertMath('⁴')">x⁴</button>
+                        <button class="math-key special" onclick="insertMath('(')">(</button>
+                        <button class="math-key special" onclick="insertMath(')')">)</button>
+                        <button class="math-key special" onclick="insertMath('{')">{</button>
+                        <button class="math-key special" onclick="insertMath('}')">}</button>
+                        <button class="math-key special wide" onclick="backspaceMath()">⌫ 지우기</button>
+                    </div>
+
+                    <!-- 연산자 섹션 -->
+                    <div class="keyboard-section operators">
+                        <button class="math-key op" onclick="insertMath('+')">+</button>
+                        <button class="math-key op" onclick="insertMath('-')">-</button>
+                        <button class="math-key op" onclick="insertMath('×')">×</button>
+                        <button class="math-key op" onclick="insertMath('÷')">÷</button>
+                        <button class="math-key op" onclick="insertMath('=')">=</button>
+                        <button class="math-key op" onclick="insertMath('≠')">≠</button>
+                    </div>
+
+                    <!-- 숫자 키패드 -->
+                    <div class="keyboard-section numbers">
+                        <button class="math-key num" onclick="insertMath('7')">7</button>
+                        <button class="math-key num" onclick="insertMath('8')">8</button>
+                        <button class="math-key num" onclick="insertMath('9')">9</button>
+                        <button class="math-key num" onclick="insertMath('4')">4</button>
+                        <button class="math-key num" onclick="insertMath('5')">5</button>
+                        <button class="math-key num" onclick="insertMath('6')">6</button>
+                        <button class="math-key num" onclick="insertMath('1')">1</button>
+                        <button class="math-key num" onclick="insertMath('2')">2</button>
+                        <button class="math-key num" onclick="insertMath('3')">3</button>
+                        <button class="math-key num wide" onclick="insertMath('0')">0</button>
+                        <button class="math-key num" onclick="insertMath('.')">.</button>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="checkAnswer()">확인</button>
+                    <button class="btn" onclick="skipProblem()">건너뛰기</button>
+                    <button class="btn" onclick="resetGame()">다시 시작</button>
+                </div>
+
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div class="result-screen" id="resultScreen">
+            <h2>게임 종료!</h2>
+            <div class="result-stats">
+                <p>정답: <span id="finalCorrect">0</span>개</p>
+                <p>오답: <span id="finalWrong">0</span>개</p>
+                <p id="recordMessage"></p>
+            </div>
+            
+            <div class="leaderboard">
+                <h3>🏆 최고 기록 TOP 5</h3>
+                <div id="leaderboardList"></div>
+            </div>
+
+            <button class="btn" onclick="restartGame()">다시 시작</button>
+        </div>
+
+        <!-- AI 모드 -->
+        <div class="ai-area">
+            <div class="difficulty-selector">
+                <label for="difficulty">난이도:</label>
+                <select id="difficulty">
+                    <option value="easy">쉬움 (기본 곱셈공식)</option>
+                    <option value="hard">어려움 (복잡한 인수분해)</option>
+                </select>
+            </div>
+
+            <div class="problem-display" id="aiProblemDisplay">
+                문제를 생성하려면 버튼을 클릭하세요
+            </div>
+
+            <div class="input-group">
+                <label for="aiAnswerInput">정답 입력:</label>
+                <input type="text" id="aiAnswerInput" placeholder="예: (x+3)(x-3)">
+            </div>
+
+            <!-- 수학 키보드 -->
+            <div class="math-keyboard">
+                <!-- 변수 섹션 -->
+                <div class="keyboard-section variables">
+                    <button class="math-key var" onclick="insertMathAI('a')">a</button>
+                    <button class="math-key var" onclick="insertMathAI('b')">b</button>
+                    <button class="math-key var" onclick="insertMathAI('c')">c</button>
+                    <button class="math-key var" onclick="insertMathAI('d')">d</button>
+                    <button class="math-key var" onclick="insertMathAI('m')">m</button>
+                    <button class="math-key var" onclick="insertMathAI('n')">n</button>
+                    <button class="math-key var" onclick="insertMathAI('x')">x</button>
+                    <button class="math-key var" onclick="insertMathAI('y')">y</button>
+                    <button class="math-key var" onclick="insertMathAI('z')">z</button>
+                </div>
+
+                <!-- 특수 기호 섹션 -->
+                <div class="keyboard-section special">
+                    <button class="math-key special" onclick="insertMathAI('²')">x²</button>
+                    <button class="math-key special" onclick="insertMathAI('³')">x³</button>
+                    <button class="math-key special" onclick="insertMathAI('⁴')">x⁴</button>
+                    <button class="math-key special" onclick="insertMathAI('(')">(</button>
+                    <button class="math-key special" onclick="insertMathAI(')')">)</button>
+                    <button class="math-key special" onclick="insertMathAI('{')">{</button>
+                    <button class="math-key special" onclick="insertMathAI('}')">}</button>
+                    <button class="math-key special wide" onclick="backspaceMathAI()">⌫ 지우기</button>
+                </div>
+
+                <!-- 연산자 섹션 -->
+                <div class="keyboard-section operators">
+                    <button class="math-key op" onclick="insertMathAI('+')">+</button>
+                    <button class="math-key op" onclick="insertMathAI('-')">-</button>
+                    <button class="math-key op" onclick="insertMathAI('×')">×</button>
+                    <button class="math-key op" onclick="insertMathAI('÷')">÷</button>
+                    <button class="math-key op" onclick="insertMathAI('=')">=</button>
+                    <button class="math-key op" onclick="insertMathAI('≠')">≠</button>
+                </div>
+
+                <!-- 숫자 키패드 -->
+                <div class="keyboard-section numbers">
+                    <button class="math-key num" onclick="insertMathAI('7')">7</button>
+                    <button class="math-key num" onclick="insertMathAI('8')">8</button>
+                    <button class="math-key num" onclick="insertMathAI('9')">9</button>
+                    <button class="math-key num" onclick="insertMathAI('4')">4</button>
+                    <button class="math-key num" onclick="insertMathAI('5')">5</button>
+                    <button class="math-key num" onclick="insertMathAI('6')">6</button>
+                    <button class="math-key num" onclick="insertMathAI('1')">1</button>
+                    <button class="math-key num" onclick="insertMathAI('2')">2</button>
+                    <button class="math-key num" onclick="insertMathAI('3')">3</button>
+                    <button class="math-key num wide" onclick="insertMathAI('0')">0</button>
+                    <button class="math-key num" onclick="insertMathAI('.')">.</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn" onclick="generateAIProblem()">새 문제</button>
+                <button class="btn" onclick="checkAIAnswer()">확인</button>
+            </div>
+
+            <div class="feedback" id="aiFeedback"></div>
+
+            <div class="ai-comment" id="aiComment">
+                AI 코멘트가 여기에 표시됩니다
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== API 키 설정 =====
+        
+        
+        // 곱셈공식 데이터베이스
+        const formulas = [
+            // (a+b)^2 = a^2 + 2ab + b^2
+            { factored: '(x+3)²', expanded: 'x²+6x+9' },
+            { factored: '(x+5)²', expanded: 'x²+10x+25' },
+            { factored: '(2x+1)²', expanded: '4x²+4x+1' },
+            
+            // (a-b)^2 = a^2 - 2ab + b^2
+            { factored: '(x-3)²', expanded: 'x²-6x+9' },
+            { factored: '(x-5)²', expanded: 'x²-10x+25' },
+            { factored: '(2x-3)²', expanded: '4x²-12x+9' },
+            
+            // (a+b)(a-b) = a^2 - b^2
+            { factored: '(x+4)(x-4)', expanded: 'x²-16' },
+            { factored: '(x+7)(x-7)', expanded: 'x²-49' },
+            { factored: '(2x+5)(2x-5)', expanded: '4x²-25' },
+            { factored: '(3x+2)(3x-2)', expanded: '9x²-4' },
+            
+            // (x+a)(x+b) = x^2 + (a+b)x + ab
+            { factored: '(x+2)(x+3)', expanded: 'x²+5x+6' },
+            { factored: '(x+1)(x+6)', expanded: 'x²+7x+6' },
+            { factored: '(x-2)(x-5)', expanded: 'x²-7x+10' },
+            { factored: '(x+4)(x-3)', expanded: 'x²+x-12' },
+        ];
+
+        // 게임 상태
+        let currentProblem = null;
+        let usedProblems = [];
+        let correctCount = 0;
+        let wrongCount = 0;
+        let currentMode = 'game';
+        let currentAIProblem = null;
+        
+        // 타이머 관련
+        let gameTimer = null;
+        let timeLeft = 60;
+        let gameInProgress = false;
+
+        // 페이지 로드 시 실행
+        window.onload = function() {
+            loadLeaderboard();
+            document.getElementById('startScreen').style.display = 'block';
+            document.getElementById('gameScreen').classList.add('hidden');
+        };
+
+        // 게임 시작
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameScreen').classList.remove('hidden');
+            newGame();
+        }
+
+        // 게임 리셋 (시작 화면으로)
+        function resetGame() {
+            if (gameTimer) {
+                clearInterval(gameTimer);
+            }
+            gameInProgress = false;
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('startScreen').style.display = 'block';
+        }
+
+        // 수학 키보드 - 게임 모드
+        function insertMath(char) {
+            const input = document.getElementById('answerInput');
+            const cursorPos = input.selectionStart;
+            const textBefore = input.value.substring(0, cursorPos);
+            const textAfter = input.value.substring(input.selectionEnd);
+            
+            input.value = textBefore + char + textAfter;
+            input.focus();
+            input.setSelectionRange(cursorPos + char.length, cursorPos + char.length);
+        }
+
+        function backspaceMath() {
+            const input = document.getElementById('answerInput');
+            const cursorPos = input.selectionStart;
+            
+            if (cursorPos > 0) {
+                const textBefore = input.value.substring(0, cursorPos - 1);
+                const textAfter = input.value.substring(input.selectionEnd);
+                input.value = textBefore + textAfter;
+                input.focus();
+                input.setSelectionRange(cursorPos - 1, cursorPos - 1);
+            }
+        }
+
+        // 수학 키보드 - AI 모드
+        function insertMathAI(char) {
+            const input = document.getElementById('aiAnswerInput');
+            const cursorPos = input.selectionStart;
+            const textBefore = input.value.substring(0, cursorPos);
+            const textAfter = input.value.substring(input.selectionEnd);
+            
+            input.value = textBefore + char + textAfter;
+            input.focus();
+            input.setSelectionRange(cursorPos + char.length, cursorPos + char.length);
+        }
+
+        function backspaceMathAI() {
+            const input = document.getElementById('aiAnswerInput');
+            const cursorPos = input.selectionStart;
+            
+            if (cursorPos > 0) {
+                const textBefore = input.value.substring(0, cursorPos - 1);
+                const textAfter = input.value.substring(input.selectionEnd);
+                input.value = textBefore + textAfter;
+                input.focus();
+                input.setSelectionRange(cursorPos - 1, cursorPos - 1);
+            }
+        }
+
+        // 모드 전환
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelector('.game-area').classList.toggle('active', mode === 'game');
+            document.querySelector('.ai-area').classList.toggle('active', mode === 'ai');
+            document.getElementById('resultScreen').classList.remove('active');
+            
+            if (mode === 'game') {
+                if (gameTimer) {
+                    clearInterval(gameTimer);
+                }
+                gameInProgress = false;
+                document.getElementById('startScreen').style.display = 'block';
+                document.getElementById('gameScreen').classList.add('hidden');
+            }
+        }
+
+        // 새 게임 시작
+        function newGame() {
+            usedProblems = [];
+            correctCount = 0;
+            wrongCount = 0;
+            timeLeft = 60;
+            gameInProgress = true;
+            
+            updateScore();
+            updateTimer();
+            generateProblem();
+            
+            if (gameTimer) {
+                clearInterval(gameTimer);
+            }
+            
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        // 타이머 업데이트
+        function updateTimer() {
+            const timerDisplay = document.getElementById('timerDisplay');
+            document.getElementById('timeLeft').textContent = timeLeft;
+            
+            if (timeLeft <= 10) {
+                timerDisplay.classList.add('warning');
+            } else {
+                timerDisplay.classList.remove('warning');
+            }
+        }
+
+        // 게임 종료
+        function endGame() {
+            gameInProgress = false;
+            clearInterval(gameTimer);
+            
+            document.getElementById('finalCorrect').textContent = correctCount;
+            document.getElementById('finalWrong').textContent = wrongCount;
+            
+            const isNewRecord = updateLeaderboard(correctCount);
+            const recordMsg = document.getElementById('recordMessage');
+            
+            if (isNewRecord) {
+                recordMsg.innerHTML = '<strong style="color: #f39c12;">🎉 새로운 최고 기록입니다!</strong>';
+            } else {
+                recordMsg.textContent = '';
+            }
+            
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('active');
+            
+            displayLeaderboard();
+        }
+
+        // 게임 재시작
+        function restartGame() {
+            document.getElementById('resultScreen').classList.remove('active');
+            document.getElementById('startScreen').style.display = 'block';
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.querySelector('.game-area').classList.add('active');
+        }
+
+        // 리더보드 불러오기
+        function loadLeaderboard() {
+            const saved = localStorage.getItem('leaderboard');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        // 리더보드 저장
+        function saveLeaderboard(leaderboard) {
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+        }
+
+        // 리더보드 업데이트
+        function updateLeaderboard(score) {
+            let leaderboard = loadLeaderboard();
+            const now = new Date();
+            const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            leaderboard.push({
+                score: score,
+                date: dateStr,
+                timestamp: now.getTime()
+            });
+            
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 5);
+            
+            saveLeaderboard(leaderboard);
+            
+            return leaderboard[0].timestamp === now.getTime();
+        }
+
+        // 리더보드 표시
+        function displayLeaderboard() {
+            const leaderboard = loadLeaderboard();
+            const listDiv = document.getElementById('leaderboardList');
+            
+            if (leaderboard.length === 0) {
+                listDiv.innerHTML = '<p style="text-align: center; opacity: 0.6;">아직 기록이 없습니다</p>';
+                return;
+            }
+            
+            listDiv.innerHTML = leaderboard.map((record, index) => {
+                const isCurrent = record.score === correctCount && index === 0;
+                return `<div class="leaderboard-item ${isCurrent ? 'current' : ''}">
+                    ${index + 1}위. ${record.score}개 (${record.date})
+                </div>`;
+            }).join('');
+        }
+
+        // 문제 생성
+        function generateProblem() {
+            if (!gameInProgress) return;
+            
+            if (usedProblems.length === formulas.length) {
+                usedProblems = [];
+            }
+
+            let availableProblems = formulas.filter((_, index) => !usedProblems.includes(index));
+            let randomIndex = Math.floor(Math.random() * availableProblems.length);
+            let selectedProblem = availableProblems[randomIndex];
+            
+            let originalIndex = formulas.indexOf(selectedProblem);
+            usedProblems.push(originalIndex);
+
+            let problemType = Math.random() < 0.5 ? 'expand' : 'factor';
+            
+            currentProblem = {
+                type: problemType,
+                formula: selectedProblem,
+                question: problemType === 'expand' ? selectedProblem.factored : selectedProblem.expanded,
+                answer: problemType === 'expand' ? selectedProblem.expanded : selectedProblem.factored
+            };
+
+            displayProblem();
+            document.getElementById('answerInput').value = '';
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        // 문제 표시
+        function displayProblem() {
+            document.getElementById('problemDisplay').innerHTML = `<strong>${currentProblem.question}</strong>`;
+        }
+
+        // 답안 정규화
+        function normalizeAnswer(answer) {
+            return answer.replace(/\s+/g, '').toLowerCase()
+                .replace(/\*\*/g, '^')
+                .replace(/\*/g, '')
+                .replace(/\^2/g, '²');
+        }
+
+        // 답 확인
+        function checkAnswer() {
+            if (!gameInProgress) return;
+            
+            const userAnswer = document.getElementById('answerInput').value;
+            const normalizedUser = normalizeAnswer(userAnswer);
+            const normalizedCorrect = normalizeAnswer(currentProblem.answer);
+
+            const feedbackDiv = document.getElementById('feedback');
+            const problemDisplay = document.getElementById('problemDisplay');
+            
+            if (normalizedUser === normalizedCorrect) {
+                problemDisplay.classList.remove('wrong');
+                problemDisplay.classList.add('correct');
+                
+                feedbackDiv.className = 'feedback correct';
+                feedbackDiv.textContent = '정답입니다! 🎉';
+                correctCount++;
+                updateScore();
+                
+                setTimeout(() => {
+                    problemDisplay.classList.remove('correct');
+                    generateProblem();
+                }, 500);
+            } else {
+                problemDisplay.classList.remove('correct');
+                problemDisplay.classList.add('wrong');
+                
+                feedbackDiv.className = 'feedback wrong';
+                feedbackDiv.textContent = `오답입니다. 정답: ${currentProblem.answer}`;
+                wrongCount++;
+                updateScore();
+                
+                setTimeout(() => {
+                    problemDisplay.classList.remove('wrong');
+                }, 500);
+                
+                setTimeout(() => {
+                    generateProblem();
+                }, 2000);
+            }
+        }
+
+        // 점수 업데이트
+        function updateScore() {
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('wrongCount').textContent = wrongCount;
+        }
+
+        // 문제 건너뛰기
+        function skipProblem() {
+            if (gameInProgress) {
+                generateProblem();
+            }
+        }
+
+        // Enter 키 처리
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        document.getElementById('aiAnswerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAIAnswer();
+            }
+        });
+
+        // AI 문제 생성
+        async function generateAIProblem() {
+            const difficulty = document.getElementById('difficulty').value;
+            const problemDisplay = document.getElementById('aiProblemDisplay');
+            
+            problemDisplay.innerHTML = '문제 생성 중...';
+
+            try {
+                const prompt = difficulty === 'easy' 
+                    ? '곱셈공식의 형태가 명확한 인수분해 문제를 하나 만들어주세요. x에 대한 2차식이어야 하며, (a+b)^2, (a-b)^2, (a+b)(a-b) 형태의 곱셈공식을 사용할 수 있어야 합니다. 문제만 간단히 제시하세요. 예: x²+6x+9 아무 텍스트 없이 문제만 출력해주세요. $와 ^같은 문자는 사용하지 않고 제곱기호는 위첨자를 사용해 주세요. x,y,z,a,b 등의 알파벳 기호는 수학에서 나오는 모양의 텍스트를 사용해 주세요.'
+                    : '복잡한 인수분해 문제를 하나 만들어주세요. 항을 분리하거나 재배치해야 곱셈공식을 적용할 수 있는 형태여야 합니다. 문제만 간단히 제시하세요. 예: 4x²+12x+9-y². 아무 텍스트 없이 문제만 출력해주세요. $와 ^같은 문자는 사용하지 않고 제곱기호는 위첨자를 사용해 주세요. x,y,z,a,b 등의 알파벳 기호는 수학에서 나오는 모양의 텍스트를 사용해 주세요.';
+
+                const response = await fetch("/api/gemini", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    type: "generate",
+                    prompt: prompt
+                })
+                });
+
+
+                if (!response.ok) {
+                    throw new Error(`API 오류: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // 서버(api/gemini.js)에서 이미 가공된 text
+                const problemText = data.text.trim();
+
+                currentAIProblem = {
+                problem: problemText,
+                difficulty: difficulty
+                };
+
+                problemDisplay.innerHTML = `<strong>${problemText}</strong>`;
+
+                document.getElementById('aiAnswerInput').value = '';
+                document.getElementById('aiFeedback').style.display = 'none';
+                document.getElementById('aiComment').innerHTML = 'AI 코멘트가 여기에 표시됩니다';
+            } catch (error) {
+                problemDisplay.innerHTML = `문제 생성 실패: ${error.message}`;
+                console.error('Error:', error);
+            }
+        }
+
+        // AI 답안 확인
+        async function checkAIAnswer() {
+            if (!currentAIProblem) {
+                alert('먼저 문제를 생성하세요!');
+                return;
+            }
+
+            const userAnswer = document.getElementById('aiAnswerInput').value.trim();
+            if (!userAnswer) {
+                alert('답을 입력하세요!');
+                return;
+            }
+
+            const commentDiv = document.getElementById('aiComment');
+            commentDiv.classList.add('loading');
+            commentDiv.innerHTML = 'AI가 답안을 확인하고 있습니다...';
+
+            try {
+                const prompt = `다음 인수분해 문제에 대한 학생의 답을 평가하고 피드백을 주세요. 단, ($,^ 등의 기호를 쓰지말고, 제곱은 위첨자 제곱기호를 사용해 주세요.)
+()
+문제: ${currentAIProblem.problem}
+학생의 답: ${userAnswer}
+
+다음 형식으로 답변해주세요:
+1. 정답 여부 (맞음/틀림)
+2. 정확한 답
+3. 현재 문제의 유형 
+
+친근하고 격려하는 톤으로 작성해주세요.`;
+
+                const response = await fetch("/api/gemini", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    type: "check",
+                    prompt: prompt
+                })
+                });
+
+
+                if (!response.ok) {
+                    throw new Error(`API 오류: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // 서버에서 정리된 Gemini 응답
+                const aiResponse = data.text;
+
+                commentDiv.innerHTML = aiResponse.replace(/\n/g, '<br>');
+
+
+                const feedbackDiv = document.getElementById('aiFeedback');
+                if (aiResponse.includes('맞음') || aiResponse.includes('정답')) {
+                    feedbackDiv.className = 'feedback correct';
+                    feedbackDiv.textContent = '잘했습니다! ✓';
+                } else {
+                    feedbackDiv.className = 'feedback wrong';
+                    feedbackDiv.textContent = '다시 한 번 시도해보세요.';
+                }
+            } catch (error) {
+                commentDiv.classList.remove('loading');
+                commentDiv.innerHTML = `AI 응답 실패: ${error.message}`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
