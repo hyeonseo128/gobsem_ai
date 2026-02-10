@@ -435,6 +435,8 @@
                     <button class="math-key special" onclick="insertMathAI(')')">)</button>
                     <button class="math-key special" onclick="insertMathAI('{')">{</button>
                     <button class="math-key special" onclick="insertMathAI('}')">}</button>
+                    <button class="math-key special" onclick="insertMath('|')">|</button>
+                    <button class="math-key special" onclick="insertMath('[변형공식]')">[변형]</button>
                     <button class="math-key special wide" onclick="backspaceMathAI()">⌫ 지우기</button>
                 </div>
 
@@ -443,8 +445,6 @@
                     <button class="math-key op" onclick="insertMathAI('-')">-</button>
                     <button class="math-key op" onclick="insertMathAI('×')">×</button>
                     <button class="math-key op" onclick="insertMathAI('÷')">÷</button>
-                    <button class="math-key op" onclick="insertMathAI('=')">=</button>
-                    <button class="math-key op" onclick="insertMathAI('≠')">≠</button>
                 </div>
 
                 <div class="keyboard-section numbers">
@@ -458,6 +458,9 @@
                     <button class="math-key num" onclick="insertMathAI('2')">2</button>
                     <button class="math-key num" onclick="insertMathAI('3')">3</button>
                     <button class="math-key num wide" onclick="insertMathAI('0')">0</button>
+                    <button class="math-key special" onclick="insertMathAI('(1/2)')">(1/2)</button>
+                    <button class="math-key special" onclick="insertMathAI('(1/3)')">(1/3)</button>
+                    <button class="math-key special" onclick="insertMathAI('(1/5)')">(1/5)</button>
                     <button class="math-key num" onclick="insertMathAI('.')">.</button>
                 </div>
             </div>
@@ -495,7 +498,12 @@
             { factored: '(x+a)(x+b)(x+c)', expanded: 'x³+(a+b+c)x²+(ab+bc+ca)x+abc' },
             { factored: '(x-a)(x-b)(x-c)', expanded: 'x³-(a+b+c)x²+(ab+bc+ca)x-abc' },
             { factored: 'a²+b²', expanded: '(a+b)²-2ab|(a-b)²+2ab' },
-            { factored: 'a³+b³', expanded: '(a+b)³-3ab(a+b)' }
+            { factored: '(a-b)²[변형공식]', expanded: '(a+b)²-4ab' },
+            { factored: 'a³-b³[변형공식]', expanded: '(a-b)³+3ab(a-b)' },
+            { factored: 'a³+b³[변형공식]', expanded: '(a+b)³-3ab(a+b)' },
+            { factored: 'a²+b²+c²', expanded: '(a+b+c)²-2(ab+bc+ca)' },
+            { factored: 'a²+b²+c²-ab-bc-ca', expanded: '(1/2){(a-b)²+(b-c)²+(c-a)²}' },
+            { factored: 'a³+b³+c³', expanded: '(a+b+c)(a²+b²+c²-ab-bc-ca)+3abc' }
         ];
 
         // 게임 상태
